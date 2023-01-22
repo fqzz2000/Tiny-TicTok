@@ -13,7 +13,7 @@ USE tictok;
 -- DROP TABLE IF EXISTS videos;
 
 
-# create users
+-- create users
 CREATE TABLE users (
 user_id 		BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 user_name 		char(255) 		NOT NULL,
@@ -22,7 +22,7 @@ PRIMARY KEY (user_id)
 ) ENGINE = innoDB;
 
 
-# create videos
+-- create videos
 CREATE TABLE videos (
 video_id 		BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 video_title 	CHAR(255) 		NOT NULL,
@@ -38,7 +38,7 @@ REFERENCES users(user_id)
 ON DELETE CASCADE
 ) ENGINE = innoDB;
 
-# create relations
+-- create relations
 CREATE TABLE relations (
 follower_id 	BIGINT UNSIGNED NOT NULL, 
 fans_id 		BIGINT UNSIGNED NOT NULL,
@@ -54,8 +54,8 @@ REFERENCES users(user_id)
 ON DELETE CASCADE
 ) ENGINE = innoDB;
 
-# create comments
-# use comment_crt_time and comment_video_id as joint index
+-- create comments
+-- use comment_crt_time and comment_video_id as joint index
 CREATE TABLE comments (
 comment_id 			BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 comment_user_id 	BIGINT UNSIGNED NOT NULL,
@@ -73,7 +73,7 @@ REFERENCES videos(video_id)
 ON DELETE CASCADE
 ) ENGINE = innoDB;
 
-# create likes
+-- create likes
 CREATE TABLE likes (
 user_id 		BIGINT UNSIGNED NOT NULL,
 video_id 		BIGINT UNSIGNED NOT NULL,
