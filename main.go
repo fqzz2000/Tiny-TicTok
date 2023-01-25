@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/RaymondCode/simple-demo/service"
+	"github.com/fqzz2000/tiny-tictok/model"
+	"github.com/fqzz2000/tiny-tictok/service"
 	"github.com/gin-gonic/gin"
 )
 func main() {
 	go service.RunMessageServer()
-
+	model.Init_DB(false)
 	r := gin.Default()
 
 	initRouter(r)

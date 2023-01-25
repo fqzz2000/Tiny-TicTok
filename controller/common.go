@@ -1,7 +1,5 @@
 package controller
 
-import "time"
-
 type Response struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg,omitempty"`
@@ -50,26 +48,26 @@ type MessagePushEvent struct {
 }
 
 // Structs for mySQL table
-type UserDB struct {
-	UserID 	 uint64 `gorm:"primaryKey column: user_id"`
-	UserName string `gorm:"column: user_name"`
-	UserPswd string `gorm:"column: user_pswd"`
-}
+// type UserDB struct {
+// 	UserID 	 uint64 `gorm:"primaryKey column: user_id"`
+// 	UserName string `gorm:"column: user_name"`
+// 	UserPswd string `gorm:"column: user_pswd"`
+// }
 
-func (*UserDB) TableName() string {
-	return "users"
-}
+// func (*UserDB) TableName() string {
+// 	return "users"
+// }
 
-type VideoDB struct {
-	VideoID      uint64		`gorm:"primaryKey column:video_id"`
-	VideoTitle   string		`gorm:"column:video_title"`
-	VideoDesc    string		`gorm:"column:video_desc"`
-	VideoOwner   uint64		`gorm:"column:video_owner"`
-	VideoCrtTime time.Time	`gorm:"column:video_crt_time"`
-	VideoFile	 string		`gorm:"column:video_file"`
-	CoverFile	 string		`gorm:"column:cover_file"`
-}
+// type VideoDB struct {
+// 	VideoID      uint64		`gorm:"primaryKey column:video_id"`
+// 	VideoTitle   string		`gorm:"column:video_title"`
+// 	VideoDesc    string		`gorm:"column:video_desc"`
+// 	VideoOwner   uint64		`gorm:"column:video_owner"`
+// 	VideoCrtTime time.Time	`gorm:"column:video_crt_time"`
+// 	VideoFile	 string		`gorm:"column:video_file"`
+// 	CoverFile	 string		`gorm:"column:cover_file"`
+// }
 
-func (*VideoDB) TableName() string {
-	return "videos"
-}
+// func (*VideoDB) TableName() string {
+// 	return "videos"
+// }

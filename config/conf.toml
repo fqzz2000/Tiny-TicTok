@@ -1,9 +1,19 @@
 [mysql]
 host = "127.0.0.1"
 port = 3306
-database = "douyin"
+database = "tictok"
 username = "root"
-password = "08898247"
+password = "123456"
+charset = "utf8mb4"
+parse_time = true
+loc = "Local"
+
+[mysqltest]
+host = "127.0.0.1"
+port = 3306
+database = "tictoktest"
+username = "root"
+password = "123456"
 charset = "utf8mb4"
 parse_time = true
 loc = "Local"
