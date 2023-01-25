@@ -2,8 +2,10 @@ package controller
 
 import (
 	"net/http"
+	"path/filepath"
 	"time"
 
+	"github.com/fqzz2000/tiny-tictok/config"
 	"github.com/fqzz2000/tiny-tictok/model"
 	"github.com/gin-gonic/gin"
 )
@@ -37,17 +39,30 @@ func Feed(c *gin.Context) {
 		NextTime:  t.Unix(),
 	})
 }
+// decorate user by user id
+// TODO: add isFollow after register function completed
+func decorateUser(id int64) User{
+	usrdb := model.NewUserDAO().QueryUserById(id)
+	ans := User {
+		Id: int64(usrdb.UserID),
+		Name: usrdb.UserName, 
+		FollowCount: model.NewRelationDAO().CountRelationsByFansID(int64(usrdb.UserID)),
+		FollowerCount: model.NewRelationDAO().CountRelationsByFollowerID(int64(usrdb.UserID)),
+	}
+	return ans
+}
+
 // return a list of videos that can be returned to the front end
 func decorateVideos(videoDBs []model.VideoDB) []Video {
 	var ans []Video;
 	for _, v := range videoDBs {
 		ans = append(ans, Video{
 			Id: v.VideoID,
-			Author: User{},
-			PlayUrl: v.VideoFile,
-			CoverUrl: v.CoverFile,
-			FavoriteCount: 12,
-			CommentCount: 18,
+			Author: decorateUser(int64(v.VideoOwner)),
+			PlayUrl: config.Info.StaticSourcePath + "/videos/" + v.VideoFile,
+			CoverUrl: filepath.Join(config.Info.StaticSourcePath, "covers", v.CoverFile),
+			FavoriteCount: model.NewLikeDAO().CountLikesByVideoID(v.VideoID),
+			CommentCount: model.NewCommentDAO().CountCommentsByVideoID(v.VideoID),
 			IsFavorite: false, 
 		})
 	}

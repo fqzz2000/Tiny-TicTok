@@ -25,7 +25,7 @@ func NewVideoDAO() VideoDAO{
 
 func (VideoDAO) QueryVideoBeforeTime(t time.Time, limit int) []VideoDB {
 	var v []VideoDB;
-	DB.Where("video_crt_time > ?", t).Limit(limit).Find(&v);
+	DB.Where("video_crt_time > ?", t).Order("video_crt_time desc").Limit(limit).Find(&v);
 	return v
 }
 

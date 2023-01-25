@@ -20,9 +20,14 @@ type Mysql struct {
 	Loc 	string
 }
 
+type Path struct {
+	StaticSourcePath string `toml:"static_source_path"`
+}
+
 type Config struct {
 	DB Mysql `toml:"mysql"`
 	DBTest Mysql `toml:"mysqltest"`
+	Path `toml:"path"`
 }
 
 var Info Config

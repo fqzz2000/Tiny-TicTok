@@ -17,3 +17,6 @@ password = "123456"
 charset = "utf8mb4"
 parse_time = true
 loc = "Local"
+
+[path]
+static_source_path = "http://192.168.0.100:8080/static/"
