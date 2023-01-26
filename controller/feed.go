@@ -33,10 +33,11 @@ func Feed(c *gin.Context) {
 	// given the token and latest time, return the response
 	var videos []Video;
 	videos = decorateVideos(model.NewVideoDAO().QueryVideoBeforeTime(t, 30))
+
 	c.JSON(http.StatusOK, FeedResponse{
 		Response:  Response{StatusCode: 0},
 		VideoList: videos,
-		NextTime:  t.Unix(),
+		NextTime:  t.Unix(), // TODO: need to set next time to proper value
 	})
 }
 // decorate user by user id

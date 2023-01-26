@@ -1,9 +1,12 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"net/http"
 	"sync/atomic"
+
+	"github.com/fqzz2000/tiny-tictok/model"
+	"github.com/gin-gonic/gin"
 )
 
 // usersLoginInfo use map to store user info, and key is username+password for demo
@@ -32,10 +35,43 @@ type UserResponse struct {
 	User User `json:"user"`
 }
 
+
 func Register(c *gin.Context) {
+	userName := c.Query("username")
+	rawVal, _ := c.Get("password")
+	password, ok := rawVal.(string)
+	if !ok {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 0, StatusMsg: "Fail to parse password"},
+		})
+	}
+	// check if user name exist
+	if model.NewUserDAO().QueryNameExists(userName) {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "User already exist"},
+		})
+	} else {
+	// write info into database
+	newUser := model.UserDB {
+		UserName: userName,
+		UserPswd: password,
+	}
+	model.NewUserDAO().AddNewUser(&newUser)
+	// construct token
+	token := userName + password
+	// construct response
+	c.JSON(http.StatusOK, UserLoginResponse{
+		Response: Response{StatusCode: 0},
+		UserId:   newUser.UserID,
+		Token:    token,
+	})
+}
+}
+
+func Register__T(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
-
+	fmt.Println(username)
 	token := username + password
 
 	if _, exist := usersLoginInfo[token]; exist {
@@ -60,7 +96,6 @@ func Register(c *gin.Context) {
 func Login(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
-
 	token := username + password
 
 	if user, exist := usersLoginInfo[token]; exist {

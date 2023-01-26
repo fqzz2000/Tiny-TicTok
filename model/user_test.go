@@ -34,3 +34,9 @@ func TestUserDAO_AddNewUser(t *testing.T) {
 	assert.Equal(t, newLen - 1, oldLen)
 	DB.Where("user_name = ?", "testusr").Delete(&UserDB{})
 }
+
+func TestUserDAO_QueryNameExists(t *testing.T) {
+	Init_DB(true)
+	assert.Equal(t, false, NewUserDAO().QueryNameExists("hello"))
+	assert.Equal(t, true, NewUserDAO().QueryNameExists("Kiyo Wu"))
+}

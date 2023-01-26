@@ -1,7 +1,7 @@
 package model
 
 type UserDB struct {
-	UserID   uint64 `gorm:"primaryKey column:user_id"`
+	UserID   int64  `gorm:"primaryKey column:user_id"`
 	UserName string `gorm:"column:user_name"`
 	UserPswd string `gorm:"column:user_pswd"`
 }
@@ -20,6 +20,12 @@ func (UserDAO) QueryUserById(id int64) UserDB {
 	var ans UserDB
 	DB.Where("user_id = ?", id).Find(&ans)
 	return ans
+}
+
+func (UserDAO) QueryNameExists(name string) bool {
+	var count int64
+	DB.Model(&UserDB{}).Where("user_name = ?", name).Count(&count)
+	return count > 0
 }
 
 func (UserDAO) AddNewUser(newUser *UserDB) {
