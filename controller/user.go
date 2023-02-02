@@ -191,19 +191,23 @@ func UserInfo (c *gin.Context) {
 		})
 		return
 	}
-	userInfo := model.NewUserDAO().QueryUserById(id)
-	usr := User{
-		Id : id,
-		Name: userInfo.UserName,
-		FollowCount: 114514,
-		FollowerCount: 1919810,
-	}
-	c.JSON(http.StatusOK, UserResponse{
-		Response: Response{
-			StatusCode: 0,
-		},
-		User : usr, 
-	})
+
+	c.JSON(http.StatusOK, getUserResponseById(id))
 
 }
 
+func getUserResponseById(id int64) UserResponse {
+	userInfo := model.NewUserDAO().QueryUserById(id)
+	usr := User{
+		Id: id,
+		Name: userInfo.UserName,
+		FollowCount: model.NewRelationDAO().CountRelationsByFansID(id),
+		FollowerCount: model.NewRelationDAO().CountRelationsByFollowerID(id),
+	}
+	return UserResponse{
+		Response: Response{
+			StatusCode: 0,
+		},
+		User: usr,
+	}
+}

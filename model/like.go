@@ -31,6 +31,12 @@ func (LikeDAO) CountLikesByVideoID(id int64) int64 {
 	return count
 }
 
+func (LikeDAO) GetIfUserLikeVideo(userId int64, videoId int64) bool {
+	var count int64 
+	DB.Model(&LikeDB{}).Where("user_id = ? AND video_id = ?", userId, videoId).Count(&count)
+	return count > 0
+}
+
 func (LikeDAO) AddNewLike(newLike *LikeDB) {
 	DB.Create(newLike)
 }

@@ -1,5 +1,11 @@
 package controller
 
+import (
+	"path/filepath"
+
+	"github.com/fqzz2000/tiny-tictok/config"
+	"github.com/fqzz2000/tiny-tictok/model"
+)
 type Response struct {
 	StatusCode int32  `json:"status_code"`
 	StatusMsg  string `json:"status_msg,omitempty"`
@@ -47,27 +53,36 @@ type MessagePushEvent struct {
 	MsgContent string `json:"msg_content,omitempty"`
 }
 
-// Structs for mySQL table
-// type UserDB struct {
-// 	UserID 	 uint64 `gorm:"primaryKey column: user_id"`
-// 	UserName string `gorm:"column: user_name"`
-// 	UserPswd string `gorm:"column: user_pswd"`
-// }
+// decorate user by user id
+// TODO: add isFollow after register function completed
+func DecorateUser(id int64) User{
+	usrdb := model.NewUserDAO().QueryUserById(id)
+	ans := User {
+		Id: int64(usrdb.UserID),
+		Name: usrdb.UserName, 
+		FollowCount: model.NewRelationDAO().CountRelationsByFansID(int64(usrdb.UserID)),
+		FollowerCount: model.NewRelationDAO().CountRelationsByFollowerID(int64(usrdb.UserID)),
+	}
+	return ans
+}
 
-// func (*UserDB) TableName() string {
-// 	return "users"
-// }
-
-// type VideoDB struct {
-// 	VideoID      uint64		`gorm:"primaryKey column:video_id"`
-// 	VideoTitle   string		`gorm:"column:video_title"`
-// 	VideoDesc    string		`gorm:"column:video_desc"`
-// 	VideoOwner   uint64		`gorm:"column:video_owner"`
-// 	VideoCrtTime time.Time	`gorm:"column:video_crt_time"`
-// 	VideoFile	 string		`gorm:"column:video_file"`
-// 	CoverFile	 string		`gorm:"column:cover_file"`
-// }
-
-// func (*VideoDB) TableName() string {
-// 	return "videos"
-// }
+// return a list of videos that can be returned to the front end
+func DecorateVideos(videoDBs []model.VideoDB, userID int64) []Video {
+	var ans []Video;
+	for _, v := range videoDBs {
+		isFavorate := false
+		if userID > 0 {
+			isFavorate = model.NewLikeDAO().GetIfUserLikeVideo(userID, v.VideoID)
+		}
+		ans = append(ans, Video{
+			Id: v.VideoID,
+			Author: DecorateUser(int64(v.VideoOwner)),
+			PlayUrl: config.Info.StaticSourcePath+ "videos/"+ v.VideoFile,
+			CoverUrl: filepath.Join(config.Info.StaticSourcePath, "covers", v.CoverFile),
+			FavoriteCount: model.NewLikeDAO().CountLikesByVideoID(v.VideoID),
+			CommentCount: model.NewCommentDAO().CountCommentsByVideoID(v.VideoID),
+			IsFavorite: isFavorate, 
+		})
+	}
+	return ans
+}

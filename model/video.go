@@ -29,6 +29,12 @@ func (VideoDAO) QueryVideoBeforeTime(t time.Time, limit int) []VideoDB {
 	return v
 }
 
+func (VideoDAO) QueryVideoByOwnerID(id int64) []VideoDB {
+	var v []VideoDB;
+	DB.Where("video_owner = ?", id).Order("video_crt_time desc").Find(&v);
+	return v
+}
+
 func (VideoDAO) AddNewVideo(newVideo *VideoDB) {
 	DB.Omit("VideoID").Create(newVideo)
 }

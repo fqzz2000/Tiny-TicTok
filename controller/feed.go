@@ -2,10 +2,10 @@ package controller
 
 import (
 	"net/http"
-	"path/filepath"
+	"strconv"
 	"time"
 
-	"github.com/fqzz2000/tiny-tictok/config"
+	"github.com/fqzz2000/tiny-tictok/middleware"
 	"github.com/fqzz2000/tiny-tictok/model"
 	"github.com/gin-gonic/gin"
 )
@@ -22,17 +22,28 @@ type user struct {
 }
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
-	// t, ok2 := c.GetQuery("latest_time")
-	// token, ok := c.GetQuery("token")
-
+	tme, _ := c.GetQuery("latest_time")
+	token, _ := c.GetQuery("token")
+	usrId := int64(0)
+	if (token != "") {
+		claims, ok := middleware.ParseToken(token)
+		if ok {
+			usrId = claims.UserId
+		}
+	}
 	var t time.Time = time.Date(2010, time.April, 2, 2, 2, 2, 2, time.UTC);
+	if tme != "" {
+		// parse time into unix time
+		i, _ := strconv.ParseInt(tme, 10, 64)
+		t = time.Unix(i, 0)
+	}
 
 	// TODO: current version: feed videos without token check
 	// generate response based on provided token and latest time
 
 	// given the token and latest time, return the response
 	var videos []Video;
-	videos = decorateVideos(model.NewVideoDAO().QueryVideoBeforeTime(t, 30))
+	videos = DecorateVideos(model.NewVideoDAO().QueryVideoBeforeTime(t, 30), usrId)
 
 	c.JSON(http.StatusOK, FeedResponse{
 		Response:  Response{StatusCode: 0},
@@ -40,35 +51,7 @@ func Feed(c *gin.Context) {
 		NextTime:  t.Unix(), // TODO: need to set next time to proper value
 	})
 }
-// decorate user by user id
-// TODO: add isFollow after register function completed
-func decorateUser(id int64) User{
-	usrdb := model.NewUserDAO().QueryUserById(id)
-	ans := User {
-		Id: int64(usrdb.UserID),
-		Name: usrdb.UserName, 
-		FollowCount: model.NewRelationDAO().CountRelationsByFansID(int64(usrdb.UserID)),
-		FollowerCount: model.NewRelationDAO().CountRelationsByFollowerID(int64(usrdb.UserID)),
-	}
-	return ans
-}
 
-// return a list of videos that can be returned to the front end
-func decorateVideos(videoDBs []model.VideoDB) []Video {
-	var ans []Video;
-	for _, v := range videoDBs {
-		ans = append(ans, Video{
-			Id: v.VideoID,
-			Author: decorateUser(int64(v.VideoOwner)),
-			PlayUrl: config.Info.StaticSourcePath+ "videos/"+ v.VideoFile,
-			CoverUrl: filepath.Join(config.Info.StaticSourcePath, "covers", v.CoverFile),
-			FavoriteCount: model.NewLikeDAO().CountLikesByVideoID(v.VideoID),
-			CommentCount: model.NewCommentDAO().CountCommentsByVideoID(v.VideoID),
-			IsFavorite: false, 
-		})
-	}
-	return ans
-}
 
 
 

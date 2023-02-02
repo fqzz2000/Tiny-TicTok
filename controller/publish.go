@@ -2,9 +2,12 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
+	"strconv"
+
+	"github.com/fqzz2000/tiny-tictok/model"
+	"github.com/gin-gonic/gin"
 )
 
 type VideoListResponse struct {
@@ -50,10 +53,13 @@ func Publish(c *gin.Context) {
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
+	userIdString := c.Query("user_id")
+	//TODO: need to check if user_id exists (user migh be deleted)
+	userId, _ := strconv.ParseInt(userIdString, 10, 64)
 	c.JSON(http.StatusOK, VideoListResponse{
 		Response: Response{
 			StatusCode: 0,
 		},
-		VideoList: DemoVideos,
+		VideoList: DecorateVideos(model.NewVideoDAO().QueryVideoByOwnerID(userId), userId),
 	})
 }
