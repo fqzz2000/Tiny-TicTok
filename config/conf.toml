@@ -19,4 +19,4 @@ parse_time = true
 loc = "Local"
 
 [path]
-static_source_path = "http://192.168.0.100:8080/static/"
+static_source_path = "http://10.200.79.164:8080/static/"

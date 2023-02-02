@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync/atomic"
 
+	"github.com/fqzz2000/tiny-tictok/middleware"
 	"github.com/fqzz2000/tiny-tictok/model"
 	"github.com/gin-gonic/gin"
 )
@@ -58,7 +59,12 @@ func Register(c *gin.Context) {
 	}
 	model.NewUserDAO().AddNewUser(&newUser)
 	// construct token
-	token := userName + password
+	token, err := middleware.ReleaseToken(newUser.UserID)
+	if err != nil {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{StatusCode: 1, StatusMsg: "Fail to Generate Token"},
+		})
+	}
 	// construct response
 	c.JSON(http.StatusOK, UserLoginResponse{
 		Response: Response{StatusCode: 0},

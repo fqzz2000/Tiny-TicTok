@@ -60,7 +60,7 @@ func decorateVideos(videoDBs []model.VideoDB) []Video {
 		ans = append(ans, Video{
 			Id: v.VideoID,
 			Author: decorateUser(int64(v.VideoOwner)),
-			PlayUrl: config.Info.StaticSourcePath + "/videos/" + v.VideoFile,
+			PlayUrl: config.Info.StaticSourcePath+ "videos/"+ v.VideoFile,
 			CoverUrl: filepath.Join(config.Info.StaticSourcePath, "covers", v.CoverFile),
 			FavoriteCount: model.NewLikeDAO().CountLikesByVideoID(v.VideoID),
 			CommentCount: model.NewCommentDAO().CountCommentsByVideoID(v.VideoID),
