@@ -22,6 +22,12 @@ func (UserDAO) QueryUserById(id int64) UserDB {
 	return ans
 }
 
+func (UserDAO) QueryUserByName(name string) UserDB {
+	var ans UserDB
+	DB.Where("user_name = ?", name).Find(&ans)
+	return ans
+}
+
 func (UserDAO) QueryNameExists(name string) bool {
 	var count int64
 	DB.Model(&UserDB{}).Where("user_name = ?", name).Count(&count)

@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"sync/atomic"
 
 	"github.com/fqzz2000/tiny-tictok/middleware"
@@ -99,7 +100,56 @@ func Register__T(c *gin.Context) {
 	}
 }
 
+
 func Login(c *gin.Context) {
+	username := c.Query("username")
+	if username == "" {
+		username = c.PostForm("username")
+	}
+	rawPswd, _ := c.Get("password")
+	password, ok := rawPswd.(string)
+	if !ok {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{
+				StatusCode : 1,
+				StatusMsg: "Cannot Parse the Password",
+			},
+		})
+		return
+	}
+
+	if !model.NewUserDAO().QueryNameExists(username) {
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{
+				StatusCode: 1,
+				StatusMsg: "User Does Not Exists",
+			},
+		})
+		return 
+	}
+	
+	userInfo := model.NewUserDAO().QueryUserByName(username)
+	if userInfo.UserPswd != password {
+		c.JSON(http.StatusOK, Response{
+			StatusCode: 40,
+			StatusMsg: "Wrong Password",
+		})
+	} else {
+		token, _ := middleware.ReleaseToken(userInfo.UserID)
+		c.JSON(http.StatusOK, UserLoginResponse{
+			Response: Response{
+				StatusCode: 0,
+			},
+			UserId: int64(userInfo.UserID),
+			Token: token,
+		})
+	}
+
+
+}
+
+
+func Login___t(c *gin.Context) {
 	username := c.Query("username")
 	password := c.Query("password")
 	token := username + password
@@ -117,17 +167,43 @@ func Login(c *gin.Context) {
 	}
 }
 
-func UserInfo(c *gin.Context) {
-	token := c.Query("token")
 
-	if user, exist := usersLoginInfo[token]; exist {
+func UserInfo (c *gin.Context) {
+	tokenUserId, _ := c.Get("UserId")
+	userId := c.Query("user_id")
+
+	if userId != fmt.Sprint(tokenUserId) {
 		c.JSON(http.StatusOK, UserResponse{
-			Response: Response{StatusCode: 0},
-			User:     user,
+			Response: Response{
+				StatusCode: 1,
+				StatusMsg: "Inconsistent UserId",
+			},
 		})
-	} else {
-		c.JSON(http.StatusOK, UserResponse{
-			Response: Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-		})
+		return
 	}
+	id, err := strconv.ParseInt(fmt.Sprint(tokenUserId), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, UserResponse{
+			Response: Response{
+				StatusCode: 1,
+				StatusMsg: "Invalid ID",
+			},
+		})
+		return
+	}
+	userInfo := model.NewUserDAO().QueryUserById(id)
+	usr := User{
+		Id : id,
+		Name: userInfo.UserName,
+		FollowCount: 114514,
+		FollowerCount: 1919810,
+	}
+	c.JSON(http.StatusOK, UserResponse{
+		Response: Response{
+			StatusCode: 0,
+		},
+		User : usr, 
+	})
+
 }
+

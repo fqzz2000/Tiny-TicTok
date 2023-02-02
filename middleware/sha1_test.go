@@ -8,5 +8,7 @@ import (
 func TestSHA1function(t *testing.T) {
 	s := "happy birthday to you"
 	fmt.Println(SHA1(s))
+	s = "douyin"
+	fmt.Println(SHA1(s))
 }
 

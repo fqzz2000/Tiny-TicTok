@@ -14,9 +14,9 @@ func initRouter(r *gin.Engine) {
 
 	// basic apis
 	apiRouter.GET("/feed/", controller.Feed)
-	apiRouter.GET("/user/", controller.UserInfo)
+	apiRouter.GET("/user/", middleware.JwtMiddleware(), controller.UserInfo)
 	apiRouter.POST("/user/register/", middleware.SHA1Middleware(), controller.Register) // need a middleware hash the passcode
-	apiRouter.POST("/user/login/", controller.Login)
+	apiRouter.POST("/user/login/", middleware.SHA1Middleware(), controller.Login)
 	apiRouter.POST("/publish/action/", controller.Publish)
 	apiRouter.GET("/publish/list/", controller.PublishList)
 
