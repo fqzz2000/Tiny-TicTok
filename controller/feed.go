@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/fqzz2000/tiny-tictok/middleware"
@@ -23,6 +23,7 @@ type user struct {
 // Feed same demo video list for every request
 func Feed(c *gin.Context) {
 	tme, _ := c.GetQuery("latest_time")
+	fmt.Println(tme);
 	token, _ := c.GetQuery("token")
 	usrId := int64(0)
 	if (token != "") {
@@ -32,11 +33,11 @@ func Feed(c *gin.Context) {
 		}
 	}
 	var t time.Time = time.Date(2010, time.April, 2, 2, 2, 2, 2, time.UTC);
-	if tme != "" {
-		// parse time into unix time
-		i, _ := strconv.ParseInt(tme, 10, 64)
-		t = time.Unix(i, 0)
-	}
+	// if tme != "" {
+	// 	// parse time into unix time
+	// 	i, _ := strconv.ParseInt(tme, 10, 64)
+	// 	t = time.Unix(i, 0)
+	// }
 
 	// TODO: current version: feed videos without token check
 	// generate response based on provided token and latest time

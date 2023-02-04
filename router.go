@@ -17,13 +17,13 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/user/", middleware.JwtMiddleware(), controller.UserInfo)
 	apiRouter.POST("/user/register/", middleware.SHA1Middleware(), controller.Register) // need a middleware hash the passcode
 	apiRouter.POST("/user/login/", middleware.SHA1Middleware(), controller.Login)
-	apiRouter.POST("/publish/action/", controller.Publish)
+	apiRouter.POST("/publish/action/", middleware.JwtMiddleware(), controller.Publish)
 	apiRouter.GET("/publish/list/", middleware.JwtMiddleware(), controller.PublishList)
 
 	// extra apis - I
-	apiRouter.POST("/favorite/action/", controller.FavoriteAction)
-	apiRouter.GET("/favorite/list/", controller.FavoriteList)
-	apiRouter.POST("/comment/action/", controller.CommentAction)
+	apiRouter.POST("/favorite/action/", middleware.JwtMiddleware(), controller.FavoriteAction)
+	apiRouter.GET("/favorite/list/", middleware.JwtMiddleware(), controller.FavoriteList)
+	apiRouter.POST("/comment/action/", middleware.JwtMiddleware(), controller.CommentAction)
 	apiRouter.GET("/comment/list/", controller.CommentList)
 
 	// extra apis - II

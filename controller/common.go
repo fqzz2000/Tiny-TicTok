@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"path/filepath"
+	"fmt"
 
 	"github.com/fqzz2000/tiny-tictok/config"
 	"github.com/fqzz2000/tiny-tictok/model"
@@ -78,10 +78,26 @@ func DecorateVideos(videoDBs []model.VideoDB, userID int64) []Video {
 			Id: v.VideoID,
 			Author: DecorateUser(int64(v.VideoOwner)),
 			PlayUrl: config.Info.StaticSourcePath+ "videos/"+ v.VideoFile,
-			CoverUrl: filepath.Join(config.Info.StaticSourcePath, "covers", v.CoverFile),
+			CoverUrl: config.Info.StaticSourcePath + "covers/" + v.CoverFile,
 			FavoriteCount: model.NewLikeDAO().CountLikesByVideoID(v.VideoID),
 			CommentCount: model.NewCommentDAO().CountCommentsByVideoID(v.VideoID),
 			IsFavorite: isFavorate, 
+		})
+	}
+	return ans
+}
+
+func DocorateComments(commentDBs []model.CommentDB) []Comment {
+	var ans []Comment
+	for _, v := range commentDBs {
+		// find user info based on comment
+		usr := DecorateUser(v.CommentUserID)
+		_, month, day := v.CommentCrtTime.Date()
+		ans = append(ans, Comment{
+			Id: v.CommentID,
+			User: usr,
+			Content: v.CommentContent,
+			CreateDate: fmt.Sprintf("%02d-%02d", month, day),
 		})
 	}
 	return ans

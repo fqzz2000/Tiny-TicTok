@@ -20,3 +20,4 @@ loc = "Local"
 
 [path]
 static_source_path = "http://10.200.79.164:8080/static/"
+ffmpeg_path = "D:/DKU/byteCamp/Tiny-TicTok/ffmpeg/ffmpeg-2023-02-02-git-7d49fef8b4-essentials_build/ffmpeg-2023-02-02-git-7d49fef8b4-essentials_build/bin/ffmpeg.exe"

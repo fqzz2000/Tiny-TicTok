@@ -22,6 +22,7 @@ type Mysql struct {
 
 type Path struct {
 	StaticSourcePath string `toml:"static_source_path"`
+	FfmpegPath string `toml:"ffmpeg_path"`
 }
 
 type Config struct {
